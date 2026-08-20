@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fairy 2.0 — Golden Trio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <div class="title">🧚 Fairy 2.0</div>
+    <div class="sub">Golden Trio • production Entry1 gate</div>
+  </header>
+
+  <section class="notice">
+    Фея влияет <b>только на новый Entry1</b>. Уже открытую позицию она не закрывает.
+  </section>
+
+  <div id="tabs" class="tabs">
+    <button data-symbol="HYPEUSDT" class="tab active">HYPE</button>
+    <button data-symbol="PENDLEUSDT" class="tab">PENDLE</button>
+    <button data-symbol="POPCATUSDT" class="tab">POPCAT</button>
+  </div>
+
+  <section id="card" class="card">
+    <div id="state" class="state neutral">⚪ Нажми «Проверить Фею»</div>
+    <div id="reason" class="reason">Статус ещё не рассчитан.</div>
+    <button id="checkBtn" class="check">Проверить Фею</button>
+  </section>
+
+  <section class="details card">
+    <div class="row"><span>Монета</span><b id="dSymbol">HYPE</b></div>
+    <div class="row"><span>Архитектура</span><b id="dArch">FIXED</b></div>
+    <div class="row"><span>OI value / 24h turnover</span><b id="dRatio">—</b></div>
+    <div class="row"><span>Threshold</span><b id="dThreshold">0.536000</b></div>
+    <div class="row"><span>Open Interest value</span><b id="dOi">—</b></div>
+    <div class="row"><span>24h quote turnover</span><b id="dTurn">—</b></div>
+    <div class="row"><span>OI age</span><b id="dAge">—</b></div>
+    <div class="row" id="historyRow" hidden><span>POPCAT history</span><b id="dHistory">—</b></div>
+    <div class="row"><span>Проверено</span><b id="dChecked">—</b></div>
+  </section>
+
+  <section class="card">
+    <h3>Замороженная конфигурация</h3>
+    <p>HYPE → FIXED <b>0.536</b></p>
+    <p>PENDLE → FIXED <b>0.8454635976569357</b></p>
+    <p>POPCAT → causal <b>EXPANDING80</b></p>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

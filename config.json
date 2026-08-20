@@ -1,0 +1,17 @@
+{
+  "HYPEUSDT": {
+    "name": "HYPE",
+    "architecture": "FIXED",
+    "threshold": 0.536
+  },
+  "PENDLEUSDT": {
+    "name": "PENDLE",
+    "architecture": "FIXED",
+    "threshold": 0.8454635976569357
+  },
+  "POPCATUSDT": {
+    "name": "POPCAT",
+    "architecture": "EXPANDING80",
+    "quantile": 0.8
+  }
+}

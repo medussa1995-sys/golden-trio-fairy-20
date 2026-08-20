@@ -1,0 +1,12 @@
+{
+  "created": "2026-08-20",
+  "mode": "GitHub Pages static",
+  "frozen": {
+    "HYPEUSDT": "FIXED 0.536",
+    "PENDLEUSDT": "FIXED 0.8454635976569357",
+    "POPCATUSDT": "EXPANDING80"
+  },
+  "popcat_seed_rows": 208922,
+  "popcat_seed_start": "2024-08-23T13:00:00+00:00",
+  "popcat_seed_end": "2026-08-18T23:55:00+00:00"
+}
