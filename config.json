@@ -1,17 +1,43 @@
 {
+  "version": "2.1.0",
+  "side": "LONG",
   "HYPEUSDT": {
     "name": "HYPE",
-    "architecture": "FIXED",
-    "threshold": 0.536
+    "fairy": {
+      "architecture": "FIXED",
+      "threshold": 0.536
+    },
+    "htf": {
+      "mode": "ALLOW",
+      "gate": "NONE"
+    }
   },
   "PENDLEUSDT": {
     "name": "PENDLE",
-    "architecture": "FIXED",
-    "threshold": 0.8454635976569357
+    "fairy": {
+      "architecture": "FIXED",
+      "threshold": 0.8454635976569357
+    },
+    "htf": {
+      "gate": "WR5",
+      "rule": "BLOCK new LONG Entry1 if nearest causal confirmed weekly resistance is <=5% above reference price",
+      "pivot": "2-left/2-right, available after both right weeks fully close"
+    }
   },
   "POPCATUSDT": {
     "name": "POPCAT",
-    "architecture": "EXPANDING80",
-    "quantile": 0.8
+    "fairy": {
+      "architecture": "EXPANDING80",
+      "quantile": 0.8
+    },
+    "htf": {
+      "gate": "R40",
+      "rule": "BLOCK new LONG Entry1 when 0.40 < prior180d_range_position <= 1.00; breakout >1.00 ALLOW",
+      "daily_window": 180
+    }
+  },
+  "POPCAT_SHORT": {
+    "htf": "OFF",
+    "note": "Current frozen short remains unchanged; no HTF gate"
   }
 }

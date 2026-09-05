@@ -3,18 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Fairy 2.0 — Golden Trio</title>
-<link rel="stylesheet" href="style.css">
+<title>Fairy 2.1 — Golden Trio LONG</title>
+<link rel="stylesheet" href="style.css?v=2.1.0">
 </head>
 <body>
 <main class="wrap">
   <header>
-    <div class="title">🧚 Fairy 2.0</div>
-    <div class="sub">Golden Trio • production Entry1 gate</div>
+    <div class="title">🧚 Fairy 2.1</div>
+    <div class="sub">Golden Trio LONG • Fairy + HTF Entry1 gate</div>
   </header>
 
   <section class="notice">
-    Фея влияет <b>только на новый Entry1</b>. Уже открытую позицию она не закрывает.
+    Проверка влияет <b>только на новый Entry1</b>. Уже открытую позицию она не закрывает,
+    O2/O3, TP и SL не меняет. POPCAT SHORT сюда не входит и остаётся без HTF.
   </section>
 
   <div id="tabs" class="tabs">
@@ -24,30 +25,58 @@
   </div>
 
   <section id="card" class="card">
-    <div id="state" class="state neutral">⚪ Нажми «Проверить Фею»</div>
+    <div id="state" class="state neutral">⚪ Нажми «Проверить вход»</div>
     <div id="reason" class="reason">Статус ещё не рассчитан.</div>
-    <button id="checkBtn" class="check">Проверить Фею</button>
+
+    <div class="gate-grid">
+      <div class="gate-box">
+        <div class="gate-label">Фея</div>
+        <div id="fairyState" class="gate-state neutral">⚪ —</div>
+        <div id="fairyReason" class="gate-reason">—</div>
+      </div>
+      <div class="gate-box">
+        <div class="gate-label">HTF LONG</div>
+        <div id="htfState" class="gate-state neutral">⚪ —</div>
+        <div id="htfReason" class="gate-reason">—</div>
+      </div>
+    </div>
+
+    <button id="checkBtn" class="check">Проверить вход</button>
   </section>
 
   <section class="details card">
     <div class="row"><span>Монета</span><b id="dSymbol">HYPE</b></div>
-    <div class="row"><span>Архитектура</span><b id="dArch">FIXED</b></div>
-    <div class="row"><span>OI value / 24h turnover</span><b id="dRatio">—</b></div>
-    <div class="row"><span>Threshold</span><b id="dThreshold">0.536000</b></div>
+    <div class="row"><span>Fairy architecture</span><b id="dArch">FIXED</b></div>
+    <div class="row"><span>Fairy OI / 24h turnover</span><b id="dRatio">—</b></div>
+    <div class="row"><span>Fairy threshold</span><b id="dThreshold">0.536000</b></div>
     <div class="row"><span>Open Interest value</span><b id="dOi">—</b></div>
     <div class="row"><span>24h quote turnover</span><b id="dTurn">—</b></div>
     <div class="row"><span>OI age</span><b id="dAge">—</b></div>
-    <div class="row" id="historyRow" hidden><span>POPCAT history</span><b id="dHistory">—</b></div>
+    <div class="row" id="historyRow" hidden><span>POPCAT Fairy history</span><b id="dHistory">—</b></div>
+
+    <div class="separator"></div>
+
+    <div class="row"><span>HTF rule</span><b id="dHtfRule">NONE</b></div>
+    <div class="row"><span>HTF reference price</span><b id="dHtfPrice">—</b></div>
+    <div class="row"><span>HTF context</span><b id="dHtfContext">—</b></div>
     <div class="row"><span>Проверено</span><b id="dChecked">—</b></div>
   </section>
 
   <section class="card">
-    <h3>Замороженная конфигурация</h3>
-    <p>HYPE → FIXED <b>0.536</b></p>
-    <p>PENDLE → FIXED <b>0.8454635976569357</b></p>
-    <p>POPCAT → causal <b>EXPANDING80</b></p>
+    <h3>Замороженная LONG-конфигурация</h3>
+    <p>HYPE → Fairy FIXED <b>0.536</b> • HTF <b>ALLOW</b></p>
+    <p>PENDLE → Fairy FIXED <b>0.8454635976569357</b> • HTF <b>WR5</b></p>
+    <p>POPCAT → Fairy causal <b>EXPANDING80</b> • HTF <b>R40</b></p>
+    <p class="small">
+      PENDLE WR5: BLOCK нового LONG Entry1, если ближайшая causal confirmed weekly resistance
+      находится ≤5% сверху.
+    </p>
+    <p class="small">
+      POPCAT R40: BLOCK при 0.40 &lt; prior-180d range position ≤1.00.
+      Breakout выше prior 180d high (&gt;1.00) снова ALLOW.
+    </p>
   </section>
 </main>
-<script src="app.js"></script>
+<script src="app.js?v=2.1.0"></script>
 </body>
 </html>

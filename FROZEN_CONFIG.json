@@ -1,12 +1,21 @@
 {
-  "created": "2026-08-20",
+  "created": "2026-09-05",
   "mode": "GitHub Pages static",
-  "frozen": {
+  "version": "Fairy 2.1 + HTF LONG",
+  "entry_semantics": "Only NEW LONG Entry1; already-open positions, O2/O3, TP and SL unchanged",
+  "frozen_fairy": {
     "HYPEUSDT": "FIXED 0.536",
     "PENDLEUSDT": "FIXED 0.8454635976569357",
     "POPCATUSDT": "EXPANDING80"
   },
-  "popcat_seed_rows": 208922,
-  "popcat_seed_start": "2024-08-23T13:00:00+00:00",
-  "popcat_seed_end": "2026-08-18T23:55:00+00:00"
+  "frozen_htf_long": {
+    "HYPEUSDT": "ALLOW / no HTF filter",
+    "PENDLEUSDT": "WR5: block if causal confirmed weekly resistance <=5% above",
+    "POPCATUSDT": "R40: block if 0.40 < prior180d range_position <=1.00; breakout >1.00 allow"
+  },
+  "short": "POPCAT SHORT unchanged; Fairy OFF; HTF OFF",
+  "research_evidence": {
+    "long_plateau": "Stage4 final 3x2: 6/6 cross-architecture clean pass",
+    "short_htf": "Stage2 predeclared falsification: no robust total+EARLY+LATE improvement"
+  }
 }
