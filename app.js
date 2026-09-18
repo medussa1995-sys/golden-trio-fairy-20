@@ -1,5 +1,7 @@
 const BASE="https://fapi.binance.com";
 const DAY=86400000;
+const PENDLE_REGIME_THRESHOLD=0.0125388259225173;
+const PENDLE_REGIME_RULE_VERSION="PENDLE_FAIRY_REGIME_V1_FROZEN";
 
 const FIXED={
   HYPEUSDT:{
@@ -417,6 +419,116 @@ async function checkFairy(symbol,now){
   };
 }
 
+
+// ============================================================
+// PENDLE MONTHLY FAIRY REGIME — frozen V1
+// Static state is refreshed by GitHub Actions from exact Binance Vision D-1/D-8 metrics.
+// If state is unavailable/invalid, fail safe = Fairy ON.
+// ============================================================
+
+function utcMonthId(ms){
+  const d=new Date(ms);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}`;
+}
+
+function utcDateId(ms){
+  const d=new Date(ms);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}-${String(d.getUTCDate()).padStart(2,"0")}`;
+}
+
+function pendleRegimeExpected(now){
+  const d=new Date(now);
+  const monthStart=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1);
+  return {
+    period:utcMonthId(monthStart),
+    d1:utcDateId(monthStart-DAY),
+    d8:utcDateId(monthStart-8*DAY),
+    nextMonth:utcMonthId(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1))
+  };
+}
+
+function pendleRegimeFailsafe(now,reason){
+  const e=pendleRegimeExpected(now);
+  return {
+    fairyOn:true,
+    dataOk:false,
+    failsafe:true,
+    period:e.period,
+    d1:e.d1,
+    d8:e.d8,
+    nextMonth:e.nextMonth,
+    chg7:null,
+    ratioD1:null,
+    ratioD8:null,
+    threshold:PENDLE_REGIME_THRESHOLD,
+    source:"FAILSAFE",
+    reason
+  };
+}
+
+async function checkPendleRegime(now){
+  const e=pendleRegimeExpected(now);
+  try{
+    const r=await fetch(
+      `pendle_regime_state.json?v=${encodeURIComponent(e.period)}`,
+      {cache:"no-store"}
+    );
+    if(!r.ok){
+      return pendleRegimeFailsafe(now,`state HTTP ${r.status}`);
+    }
+
+    const x=await r.json();
+    const ratioD1=Number(x.ratio_d1);
+    const ratioD8=Number(x.ratio_d8);
+    const chg7=Number(x.chg7 ?? x.strict_chg7);
+    const threshold=Number(x.threshold);
+
+    const valid=
+      x.rule_version===PENDLE_REGIME_RULE_VERSION &&
+      x.period===e.period &&
+      x.d1===e.d1 &&
+      x.d8===e.d8 &&
+      x.data_ok===true &&
+      Number.isFinite(ratioD1) && ratioD1>0 &&
+      Number.isFinite(ratioD8) && ratioD8>0 &&
+      Number.isFinite(chg7) &&
+      Number.isFinite(threshold) &&
+      Math.abs(threshold-PENDLE_REGIME_THRESHOLD)<1e-12 &&
+      Math.abs((ratioD1/ratioD8-1)-chg7)<1e-8;
+
+    if(!valid){
+      return pendleRegimeFailsafe(now,"state validation failed");
+    }
+
+    const expectedOn=chg7<PENDLE_REGIME_THRESHOLD;
+    const state=String(x.fairy_state||x.state||"").toUpperCase();
+    const declaredOn=state==="ON" || state==="FAIRY_ON";
+    const declaredOff=state==="OFF" || state==="FAIRY_OFF";
+
+    if((expectedOn&&!declaredOn)||(!expectedOn&&!declaredOff)){
+      return pendleRegimeFailsafe(now,"state/metric mismatch");
+    }
+
+    return {
+      fairyOn:expectedOn,
+      dataOk:true,
+      failsafe:false,
+      period:e.period,
+      d1:e.d1,
+      d8:e.d8,
+      nextMonth:e.nextMonth,
+      chg7,
+      ratioD1,
+      ratioD8,
+      threshold:PENDLE_REGIME_THRESHOLD,
+      source:String(x.source||"Binance Vision daily metrics"),
+      reason:null
+    };
+  }catch(err){
+    return pendleRegimeFailsafe(now,String(err?.message||err));
+  }
+}
+
 // ============================================================
 // HTF LONG — frozen WR5 / R40
 // Causal structure only; current reference price is live.
@@ -734,6 +846,10 @@ function drawMeta(){
   $("historyRow").hidden=
     selected!=="POPCATUSDT";
 
+  const isPendle=selected==="PENDLEUSDT";
+  $("regimeBox").hidden=!isPendle;
+  document.querySelectorAll(".pendle-regime-row").forEach(x=>x.hidden=!isPendle);
+
   $("dRatio").textContent="—";
   $("dOi").textContent="—";
   $("dTurn").textContent="—";
@@ -741,6 +857,10 @@ function drawMeta(){
   $("dHistory").textContent="—";
   $("dHtfPrice").textContent="—";
   $("dHtfContext").textContent="—";
+  $("dRegimeState").textContent="—";
+  $("dRegimeMetric").textContent="—";
+  $("dRegimeDates").textContent="—";
+  $("dRegimeSource").textContent="—";
   $("dChecked").textContent="—";
 }
 
@@ -756,6 +876,10 @@ function resetStates(){
   $("htfState").className="gate-state neutral";
   $("htfState").textContent="⚪ —";
   $("htfReason").textContent="—";
+
+  $("regimeState").className="gate-state neutral";
+  $("regimeState").textContent="⚪ —";
+  $("regimeReason").textContent="—";
 }
 
 async function check(){
@@ -776,26 +900,38 @@ async function check(){
   $("htfState").textContent="⚪ считаю…";
   $("htfReason").textContent="—";
 
+  if(selected==="PENDLEUSDT"){
+    $("regimeState").className="gate-state neutral";
+    $("regimeState").textContent="⚪ считаю…";
+    $("regimeReason").textContent="—";
+  }
+
   try{
     const now=await serverTime();
 
-    const [fairy,htf]=await Promise.all([
+    const [fairy,htf,regime]=await Promise.all([
       checkFairy(selected,now),
-      checkHTF(selected,now)
+      checkHTF(selected,now),
+      selected==="PENDLEUSDT"
+        ? checkPendleRegime(now)
+        : Promise.resolve(null)
     ]);
+
+    const pendleBypass=
+      selected==="PENDLEUSDT" && regime && !regime.fairyOn;
 
     $("fairyState").className=
       "gate-state "+(fairy.allow?"green":"red");
 
     $("fairyState").textContent=
-      fairy.allow
-        ? "🟢 ALLOW"
-        : "🔴 BLOCK";
+      (fairy.allow ? "🟢 ALLOW" : "🔴 BLOCK")+
+      (pendleBypass ? " • BYPASS" : "");
 
     $("fairyReason").textContent=
       `${fairy.ratio.toFixed(6)} `+
       `${fairy.allow?"≤":">"} `+
-      `${fairy.threshold.toFixed(6)}`;
+      `${fairy.threshold.toFixed(6)}`+
+      (pendleBypass ? " • игнорируется REGIME" : "");
 
     $("htfState").className=
       "gate-state "+(htf.allow?"green":"red");
@@ -808,8 +944,32 @@ async function check(){
     $("htfReason").textContent=
       `${htf.rule} • ${htf.reason}`;
 
+    if(selected==="PENDLEUSDT"){
+      if(regime.failsafe){
+        $("regimeState").className="gate-state error";
+        $("regimeState").textContent="🟠 FAILSAFE • ФЕЯ ON";
+        $("regimeReason").textContent=
+          `${regime.reason} • stale substitute запрещён`;
+      }else if(regime.fairyOn){
+        $("regimeState").className="gate-state green";
+        $("regimeState").textContent="🟢 ФЕЯ ON";
+        $("regimeReason").textContent=
+          `${(regime.chg7*100).toFixed(3)}% < ${(regime.threshold*100).toFixed(3)}%`;
+      }else{
+        $("regimeState").className="gate-state bypass";
+        $("regimeState").textContent="🟡 ФЕЯ OFF • BYPASS";
+        $("regimeReason").textContent=
+          `${(regime.chg7*100).toFixed(3)}% ≥ ${(regime.threshold*100).toFixed(3)}% • до ${regime.nextMonth}`;
+      }
+    }
+
+    const effectiveFairyAllow=
+      selected==="PENDLEUSDT" && regime && !regime.fairyOn
+        ? true
+        : fairy.allow;
+
     const finalAllow=
-      fairy.allow && htf.allow;
+      effectiveFairyAllow && htf.allow;
 
     $("state").className=
       "state "+(finalAllow?"green":"red");
@@ -820,13 +980,25 @@ async function check(){
         : "🔴 ENTRY1 ЗАПРЕЩЁН";
 
     const blockers=[];
-    if(!fairy.allow) blockers.push("Фея");
+    if(!effectiveFairyAllow) blockers.push("Фея");
     if(!htf.allow) blockers.push("HTF");
 
-    $("reason").textContent=
-      finalAllow
-        ? "Фея ALLOW + HTF ALLOW"
-        : `BLOCK: ${blockers.join(" + ")}`;
+    if(selected==="PENDLEUSDT" && regime && !regime.fairyOn){
+      $("reason").textContent=
+        finalAllow
+          ? "REGIME: Фея BYPASS • HTF ALLOW"
+          : `BLOCK: ${blockers.join(" + ")} • Фея BYPASS`;
+    }else if(selected==="PENDLEUSDT" && regime && regime.failsafe){
+      $("reason").textContent=
+        finalAllow
+          ? "FAILSAFE: Фея ALLOW + HTF ALLOW"
+          : `FAILSAFE BLOCK: ${blockers.join(" + ")}`;
+    }else{
+      $("reason").textContent=
+        finalAllow
+          ? "Фея ALLOW + HTF ALLOW"
+          : `BLOCK: ${blockers.join(" + ")}`;
+    }
 
     $("dRatio").textContent=
       fairy.ratio.toFixed(6);
@@ -857,6 +1029,20 @@ async function check(){
 
     $("dHtfContext").textContent=
       htf.metric;
+
+    if(selected==="PENDLEUSDT" && regime){
+      $("dRegimeState").textContent=
+        regime.failsafe
+          ? "FAIRY ON • FAILSAFE"
+          : (regime.fairyOn ? "FAIRY ON" : "FAIRY OFF / BYPASS");
+      $("dRegimeMetric").textContent=
+        regime.chg7==null
+          ? "—"
+          : `${(regime.chg7*100).toFixed(3)}% / ${(regime.threshold*100).toFixed(3)}%`;
+      $("dRegimeDates").textContent=
+        `${regime.d8} → ${regime.d1}`;
+      $("dRegimeSource").textContent=regime.source;
+    }
 
     $("dChecked").textContent=
       new Date(now)
@@ -889,6 +1075,14 @@ async function check(){
         "gate-state error";
       $("htfState").textContent=
         "🟠 ERROR";
+    }
+
+    if(
+      selected==="PENDLEUSDT" &&
+      $("regimeState").textContent.includes("считаю")
+    ){
+      $("regimeState").className="gate-state error";
+      $("regimeState").textContent="🟠 ERROR";
     }
 
   }finally{

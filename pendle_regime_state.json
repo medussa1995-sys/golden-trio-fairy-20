@@ -1,0 +1,16 @@
+{
+  "rule_version": "PENDLE_FAIRY_REGIME_V1_FROZEN",
+  "period": "2026-09",
+  "decision_effective_from_utc": "2026-09-01T00:10:00Z",
+  "d1": "2026-08-31",
+  "ratio_d1": 2.127776,
+  "d8": "2026-08-24",
+  "ratio_d8": 1.99034,
+  "chg7": 0.06905151883597771,
+  "threshold": 0.0125388259225173,
+  "fairy_state": "OFF",
+  "data_ok": true,
+  "fallback_reason": null,
+  "source": "Binance Vision UM daily metrics: final sum_toptrader_long_short_ratio for exact UTC D-1 and D-8",
+  "research_status": "Stage5 operational PASS; frozen threshold; production checker enabled 2026-09-18"
+}

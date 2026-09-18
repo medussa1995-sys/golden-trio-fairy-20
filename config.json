@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "side": "LONG",
   "HYPEUSDT": {
     "name": "HYPE",
@@ -22,6 +22,16 @@
       "gate": "WR5",
       "rule": "BLOCK new LONG Entry1 if nearest causal confirmed weekly resistance is <=5% above reference price",
       "pivot": "2-left/2-right, available after both right weeks fully close"
+    },
+    "fairy_regime": {
+      "rule_version": "PENDLE_FAIRY_REGIME_V1_FROZEN",
+      "feature": "top_trader_position_long_short_ratio exact UTC D-1 / D-8 change",
+      "threshold": 0.0125388259225173,
+      "fairy_on_when": "chg7 < threshold",
+      "fairy_bypass_when": "chg7 >= threshold",
+      "cadence": "monthly UTC",
+      "fail_safe": "FAIRY_ON",
+      "state_file": "pendle_regime_state.json"
     }
   },
   "POPCATUSDT": {

@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Fairy 2.1 — Golden Trio LONG</title>
-<link rel="stylesheet" href="style.css?v=2.1.0">
+<title>Fairy 2.2 — Golden Trio LONG</title>
+<link rel="stylesheet" href="style.css?v=2.2.0">
 </head>
 <body>
 <main class="wrap">
   <header>
-    <div class="title">🧚 Fairy 2.1</div>
-    <div class="sub">Golden Trio LONG • Fairy + HTF Entry1 gate</div>
+    <div class="title">🧚 Fairy 2.2</div>
+    <div class="sub">Golden Trio LONG • Regime + Fairy + HTF Entry1 gate</div>
   </header>
 
   <section class="notice">
@@ -33,6 +33,11 @@
         <div class="gate-label">Фея</div>
         <div id="fairyState" class="gate-state neutral">⚪ —</div>
         <div id="fairyReason" class="gate-reason">—</div>
+      </div>
+      <div id="regimeBox" class="gate-box" hidden>
+        <div class="gate-label">PENDLE REGIME</div>
+        <div id="regimeState" class="gate-state neutral">⚪ —</div>
+        <div id="regimeReason" class="gate-reason">—</div>
       </div>
       <div class="gate-box">
         <div class="gate-label">HTF LONG</div>
@@ -59,14 +64,25 @@
     <div class="row"><span>HTF rule</span><b id="dHtfRule">NONE</b></div>
     <div class="row"><span>HTF reference price</span><b id="dHtfPrice">—</b></div>
     <div class="row"><span>HTF context</span><b id="dHtfContext">—</b></div>
+
+    <div class="separator pendle-regime-row" hidden></div>
+    <div class="row pendle-regime-row" hidden><span>PENDLE Fairy regime</span><b id="dRegimeState">—</b></div>
+    <div class="row pendle-regime-row" hidden><span>Top-trader position L/S 7d</span><b id="dRegimeMetric">—</b></div>
+    <div class="row pendle-regime-row" hidden><span>Regime exact dates</span><b id="dRegimeDates">—</b></div>
+    <div class="row pendle-regime-row" hidden><span>Regime source</span><b id="dRegimeSource">—</b></div>
+
     <div class="row"><span>Проверено</span><b id="dChecked">—</b></div>
   </section>
 
   <section class="card">
     <h3>Замороженная LONG-конфигурация</h3>
     <p>HYPE → Fairy FIXED <b>0.536</b> • HTF <b>ALLOW</b></p>
-    <p>PENDLE → Fairy FIXED <b>0.8454635976569357</b> • HTF <b>WR5</b></p>
+    <p>PENDLE → monthly <b>REGIME</b> switches Fairy ON/BYPASS • Fairy FIXED <b>0.8454635976569357</b> • HTF <b>WR5</b></p>
     <p>POPCAT → Fairy causal <b>EXPANDING80</b> • HTF <b>R40</b></p>
+    <p class="small">
+      PENDLE regime: Fairy ON при 7d top-trader position L/S change &lt; <b>+1.2538826%</b>;
+      иначе Fairy BYPASS на весь UTC-месяц. Missing/invalid exact D-1/D-8 → Fairy ON FAILSAFE.
+    </p>
     <p class="small">
       PENDLE WR5: BLOCK нового LONG Entry1, если ближайшая causal confirmed weekly resistance
       находится ≤5% сверху.
@@ -77,6 +93,6 @@
     </p>
   </section>
 </main>
-<script src="app.js?v=2.1.0"></script>
+<script src="app.js?v=2.2.0"></script>
 </body>
 </html>

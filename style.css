@@ -53,7 +53,7 @@ body{
 .reason{margin:12px 0 18px;color:var(--muted);font-size:18px;line-height:1.35}
 .gate-grid{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(3,1fr);
   gap:12px;
   margin:14px 0 18px;
 }
@@ -79,6 +79,7 @@ body{
 .gate-state.green{color:var(--green)}
 .gate-state.red{color:var(--red)}
 .gate-state.error{color:var(--yellow)}
+.gate-state.bypass{color:var(--yellow)}
 .gate-state.neutral{color:var(--muted)}
 .gate-reason{
   color:var(--muted);
@@ -122,3 +123,5 @@ p.small{font-size:15px}
   .state{font-size:25px}
   .gate-grid{grid-template-columns:1fr}
 }
+
+[hidden]{display:none!important}

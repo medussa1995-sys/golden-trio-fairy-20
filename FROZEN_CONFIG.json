@@ -1,7 +1,7 @@
 {
-  "created": "2026-09-05",
+  "created": "2026-09-18",
   "mode": "GitHub Pages static",
-  "version": "Fairy 2.1 + HTF LONG",
+  "version": "Fairy 2.2 + PENDLE monthly regime + HTF LONG",
   "entry_semantics": "Only NEW LONG Entry1; already-open positions, O2/O3, TP and SL unchanged",
   "frozen_fairy": {
     "HYPEUSDT": "FIXED 0.536",
@@ -17,5 +17,16 @@
   "research_evidence": {
     "long_plateau": "Stage4 final 3x2: 6/6 cross-architecture clean pass",
     "short_htf": "Stage2 predeclared falsification: no robust total+EARLY+LATE improvement"
+  },
+  "pendle_fairy_regime": {
+    "status": "LIVE_CHECKER_ENABLED_2026-09-18",
+    "rule_version": "PENDLE_FAIRY_REGIME_V1_FROZEN",
+    "feature": "exact UTC ratio(D-1)/ratio(D-8)-1 using Binance top-trader position long/short ratio",
+    "threshold": 0.0125388259225173,
+    "fairy_on": "chg7 < threshold",
+    "fairy_bypass": "chg7 >= threshold",
+    "fail_safe": "FAIRY_ON if exact state missing/invalid",
+    "scope": "PENDLE new LONG Entry1 only; HTF WR5 always retained; open positions/O2/O3/TP/SL unchanged",
+    "evidence": "Stage2 family-wise p≈0.007; late+untouched 8/8; Stage4 exact +853.46 vs best static; Stage5 operational PASS"
   }
 }
